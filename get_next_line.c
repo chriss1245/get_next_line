@@ -6,44 +6,62 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 13:21:42 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/12 17:58:19 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/15 12:11:53 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h> 
+#include <fcntl.h>
+#include <stdio.h>
 
-typedef struct s_fd_buffer
-{
-	char	**buffers;
-	int		*fds;
-}t_buffer;
 char	*get_next_line(int fd)
 {
-	size_t bsize;
-	size_t	scanned;
-	char	*s;
-	int		i;
-	static t_buffer buffer;
-
-	buffer.buffers = (char **) malloc( 5* sizeof(char *));
-	buffer.buffers[0] = (char *) malloc(BUFFER_SIZE * sizeof(char));
-	bsize = BUFFER_SIZE;
-	scanned = read(fd, buffer.buffers[0], bsize);
-	s = (char *) malloc((scanned + 1) * sizeof(char));
-	i = 0;
-	while (i < scanned)
+	static char	buffer[BUFFER_SIZE + 1];
+	size_t		scanned;
+	char		*s;
+	char		*ns;
+	int			aux;
+	
+	buffer[BUFFER_SIZE] = 0;
+	aux = ft_strnchr_idx(buffer, '\n') + 1;
+	s = (char *) malloc(1*sizeof(char));
+	s[0] = 0;
+	if (aux > 0)
 	{
-		s[i] = buffer.buffers[0][i];
-		i++;
+		ns = ft_strnjoin(s, buffer + aux, BUFFER_SIZE-aux);
+		free(s);
+		s = ns;
 	}
-	s[i] = 0;
-	return (s);
+	scanned = read(fd, buffer, BUFFER_SIZE);
+	if (scanned <= 0)
+	{
+		free(s);
+		return (0);
+	}
+	while (ft_strnchr_idx(buffer, '\n') < 0 && scanned > 0)
+	{
+		ns = ft_strnjoin(s, buffer, BUFFER_SIZE);
+		free(s);
+		s = ns;
+		scanned = read(fd, buffer, BUFFER_SIZE);
+	}
+	if (scanned < 0)
+	{
+		return (s);
+	}
+	ns = ft_strnjoin(s, buffer, (size_t) (ft_strnchr_idx(buffer, '\n') + 1));
+	free(s);
+	return (ns);
 }
 
 int main()
 {
 	int fd = open("lol", O_RDONLY);
 
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
+	printf("%s\n", get_next_line(fd));
 	printf("%s\n", get_next_line(fd));
 }

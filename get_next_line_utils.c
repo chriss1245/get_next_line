@@ -6,7 +6,7 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 16:23:15 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/15 11:47:00 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/16 14:42:22 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,19 @@
  * */
 
 #include "get_next_line.h"
+
+void	ft_bzero(void	*s, unsigned int n)
+{
+	unsigned char	*s_;
+
+	s_ = s;
+	while (n > 0)
+	{
+		*s_ = 0;
+		s_++;
+		n--;
+	}
+}
 
 size_t	ft_strlen(const	char *c)
 {
@@ -63,19 +76,19 @@ void	*ft_memcpy(void *dest, const void *src, unsigned int n)
 	return (dest);
 }
 
-char	*ft_strnjoin(char const *s1, char const *s2, size_t n)
+char	*ft_strnjoin(char const *s1, char const *s2, size_t m, size_t n)
 {
 	unsigned int	len_s1;
 	char			*c;
 	size_t			i;
 	size_t			j;
 
-	len_s1 = ft_strlen((char *) s1);
+	len_s1 = ft_strlen(s1);
 	c = malloc((len_s1 + n + 1) * sizeof(char));
 	if (!c)
 		return (0);
 	i = 0;
-	while (i < len_s1)
+	while (i < len_s1 && i < m)
 	{
 		c[i] = s1[i];
 		i++;

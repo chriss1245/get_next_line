@@ -6,7 +6,7 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 13:21:42 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/15 12:11:53 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/16 19:05:56 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,51 +17,57 @@
 char	*get_next_line(int fd)
 {
 	static char	buffer[BUFFER_SIZE + 1];
-	size_t		scanned;
+	int		scanned;
 	char		*s;
 	char		*ns;
 	int			aux;
-	
-	buffer[BUFFER_SIZE] = 0;
-	aux = ft_strnchr_idx(buffer, '\n') + 1;
-	s = (char *) malloc(1*sizeof(char));
-	s[0] = 0;
-	if (aux > 0)
+
+	aux = ft_strnchr_idx(buffer, '\n');
+ 	if (aux > -1)
 	{
-		ns = ft_strnjoin(s, buffer + aux, BUFFER_SIZE-aux);
-		free(s);
-		s = ns;
+		s = ft_strnjoin(buffer, "", ft_strnchr_idx(buffer, '\n') + 1, 0);
+		ft_memcpy(buffer, buffer + aux + 1, BUFFER_SIZE - aux -1);
+		ft_bzero(buffer + BUFFER_SIZE - aux - 1, aux + 1);
+		printf("\ts\n");
+
+		return (s);
 	}
+	s = ft_strnjoin(buffer, "", ft_strnchr_idx(buffer, '\0') , 0);
 	scanned = read(fd, buffer, BUFFER_SIZE);
+	aux = ft_strnchr_idx(buffer, '\n');
 	if (scanned <= 0)
 	{
 		free(s);
 		return (0);
 	}
-	while (ft_strnchr_idx(buffer, '\n') < 0 && scanned > 0)
+	while ( aux < 0 && scanned > 0)
 	{
-		ns = ft_strnjoin(s, buffer, BUFFER_SIZE);
+		ns = ft_strnjoin(s, buffer, ft_strlen(s), BUFFER_SIZE);
 		free(s);
 		s = ns;
 		scanned = read(fd, buffer, BUFFER_SIZE);
+		aux = ft_strnchr_idx(buffer, '\n');
 	}
-	if (scanned < 0)
-	{
-		return (s);
-	}
-	ns = ft_strnjoin(s, buffer, (size_t) (ft_strnchr_idx(buffer, '\n') + 1));
+	ns = ft_strnjoin(s, buffer, ft_strlen(s), (size_t) aux + 1);
 	free(s);
+	ft_memcpy(buffer, buffer + aux + 1, BUFFER_SIZE - aux - 1);
+	ft_bzero(buffer + BUFFER_SIZE - aux -1, aux + 1);
+	printf("\tns\n");
 	return (ns);
 }
 
+/*
 int main()
 {
 	int fd = open("lol", O_RDONLY);
 
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-	printf("%s\n", get_next_line(fd));
-}
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	printf("%s", get_next_line(fd));
+	
+	close(fd);
+}*/

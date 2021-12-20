@@ -6,17 +6,13 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 16:23:15 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/16 14:42:22 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/20 19:06:04 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-	Creates a new string with  s1 concatenated s2 until the n first bytes of s2
- * */
-
 #include "get_next_line.h"
 
-void	ft_bzero(void	*s, unsigned int n)
+void	ft_bzero2(void	*s, unsigned int n)
 {
 	unsigned char	*s_;
 
@@ -29,7 +25,7 @@ void	ft_bzero(void	*s, unsigned int n)
 	}
 }
 
-size_t	ft_strlen(const	char *c)
+size_t	ft_strlen2(const	char *c)
 {
 	size_t	len;
 
@@ -83,7 +79,7 @@ char	*ft_strnjoin(char const *s1, char const *s2, size_t m, size_t n)
 	size_t			i;
 	size_t			j;
 
-	len_s1 = ft_strlen(s1);
+	len_s1 = ft_strlen2(s1);
 	c = malloc((len_s1 + n + 1) * sizeof(char));
 	if (!c)
 		return (0);

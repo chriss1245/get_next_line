@@ -6,26 +6,28 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 13:21:42 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/18 14:55:18 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/20 19:07:44 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <fcntl.h>
 
 static char	*update_str(char *s, char *buffer, int offset)
 {
 	char	*ns;
 
-	ns = ft_strnjoin(s, buffer, ft_strlen(s), offset);
+	ns = ft_strnjoin(s, buffer, ft_strlen2(s), offset);
 	free(s);
 	ft_memcpy(buffer, buffer + offset, BUFFER_SIZE - offset);
-	ft_bzero(buffer + BUFFER_SIZE - offset, offset);
+	ft_bzero2(buffer + BUFFER_SIZE - offset, offset);
 	return (ns);
 }
 
-static char	*get_next_line_scan_error(char *s, int buffer_len)
+static char	*get_next_line_scan_error(char *s, int buffer_len, \
+		char **buffers, int fd)
 {
+	free(buffers[fd]);
+	buffers[fd] = 0;
 	if (buffer_len > 0)
 		return (s);
 	free(s);
@@ -40,38 +42,45 @@ static char	*get_next_line_scan_finished(char *s, char *buffer, int scanned)
 	if (idx < 0)
 	{
 		s = update_str(s, buffer, scanned);
-		ft_bzero(buffer, BUFFER_SIZE);
+		ft_bzero2(buffer, BUFFER_SIZE);
 		return (s);
 	}
 	idx = ft_strnchr_idx(buffer, '\n');
 	return (update_str(s, buffer, idx + 1));
 }
 
+static char	*get_next_chunck(char *s, char **buffers, int fd, int *ibs)
+{
+	s = update_str(s, buffers[fd], BUFFER_SIZE);
+	ibs[2] = read(fd, buffers[fd], BUFFER_SIZE);
+	ibs[0] = ft_strnchr_idx(buffers[fd], '\n');
+	return (s);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	buffer[BUFFER_SIZE + 1];
-	int			scanned;
+	static char	*buffers[MAX_FD];
 	char		*s;
-	int			aux;
-	int			buffer_len;
+	int			ibs[3];
 
-	buffer_len = ft_strlen(buffer);
-	aux = ft_strnchr_idx(buffer, '\n');
-	s = ft_strnjoin("", "", 0, 0);
-	if (aux > -1)
-		return (update_str(s, buffer, aux + 1));
-	s = update_str(s, buffer, buffer_len);
-	scanned = read(fd, buffer, BUFFER_SIZE);
-	aux = ft_strnchr_idx(buffer, '\n');
-	if (scanned <= 0)
-		return (get_next_line_scan_error(s, buffer_len));
-	while (aux < 0 && scanned == BUFFER_SIZE)
+	if (fd < 0)
+		return (0);
+	if (!buffers[fd])
 	{
-		s = update_str(s, buffer, BUFFER_SIZE);
-		scanned = read(fd, buffer, BUFFER_SIZE);
-		aux = ft_strnchr_idx(buffer, '\n');
+		buffers[fd] = (char *) malloc((BUFFER_SIZE + 1) * sizeof(char));
+		ft_bzero2(buffers[fd], BUFFER_SIZE + 1);
 	}
-	if (scanned < BUFFER_SIZE && scanned >= 0)
-		return (get_next_line_scan_finished(s, buffer, scanned));
-	return (update_str(s, buffer, aux + 1));
+	ibs[1] = ft_strlen2(buffers[fd]);
+	ibs[0] = ft_strnchr_idx(buffers[fd], '\n');
+	s = ft_strnjoin("", "", 0, 0);
+	if (ibs[0] > -1)
+		return (update_str(s, buffers[fd], ibs[0] + 1));
+	s = get_next_chunck(s, buffers, fd, &ibs[0]);
+	if (ibs[2] <= 0)
+		return (get_next_line_scan_error(s, ibs[1], buffers, fd));
+	while (ibs[0] < 0 && ibs[2] == BUFFER_SIZE)
+		s = get_next_chunck(s, buffers, fd, &ibs[0]);
+	if (ibs[2] < BUFFER_SIZE && ibs[2] >= 0)
+		return (get_next_line_scan_finished(s, buffers[fd], ibs[2]));
+	return (update_str(s, buffers[fd], ibs[0] + 1));
 }

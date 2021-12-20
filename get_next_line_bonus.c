@@ -6,11 +6,11 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 13:21:42 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/20 14:23:40 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/20 15:03:34 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*update_str(char *s, char *buffer, int offset)
 {
@@ -59,10 +59,12 @@ static char	*get_next_chunck(char *s, char **buffers, int fd, int *ibs)
 
 char	*get_next_line(int fd)
 {
-	static char	*buffers[4096] = {0};
+	static char	*buffers[4096];
 	char		*s;
 	int			ibs[3];
 
+	if (fd < 0)
+		return (0);
 	if (!buffers[fd])
 	{
 		buffers[fd] = (char *) malloc((BUFFER_SIZE + 1) * sizeof(char));

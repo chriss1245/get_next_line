@@ -6,11 +6,11 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 13:21:42 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/20 19:07:44 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/21 14:20:06 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../inc/get_next_line.h"
 
 static char	*update_str(char *s, char *buffer, int offset)
 {

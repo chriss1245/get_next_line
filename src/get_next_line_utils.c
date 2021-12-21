@@ -6,11 +6,11 @@
 /*   By: cmanzano <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 16:23:15 by cmanzano          #+#    #+#             */
-/*   Updated: 2021/12/20 19:06:04 by cmanzano         ###   ########.fr       */
+/*   Updated: 2021/12/21 14:20:05 by cmanzano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../inc/get_next_line.h"
 
 void	ft_bzero2(void	*s, unsigned int n)
 {
